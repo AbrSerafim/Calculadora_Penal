@@ -1,6 +1,7 @@
 package br.com.calculadorapenal
 
 import br.com.calculadorapenal.model.CalculationData
+import br.com.calculadorapenal.calculation.PenaltyCalculator
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -78,32 +79,33 @@ fun AppNavigation() {
             CalculationScreen(
                 onCalculateClick = { calculationData ->
 
+                    val result = PenaltyCalculator.calculate(
+                        calculationData
+                    )
+
                     navController.navigate(
                         "results/" +
-                                "${calculationData.years}/" +
-                                "${calculationData.months}/" +
-                                "${calculationData.days}/" +
-                                "${Uri.encode(calculationData.startDate)}/" +
-                                "${calculationData.detractionDays}/" +
-                                "${Uri.encode(calculationData.crimeType)}/" +
-                                "${Uri.encode(calculationData.inmateStatus)}"
+                                "${Uri.encode(result.semiOpenDate)}/" +
+                                "${Uri.encode(result.openDate)}/" +
+                                "${Uri.encode(result.paroleDate ?: "")}"
                     )
                 }
             )
         }
 
         composable(
-            route = "results/{years}/{months}/{days}/{startDate}/{detractionDays}/{crimeType}/{inmateStatus}"
+            route = "results/{semiOpenDate}/{openDate}/{paroleDate}"
         ) { backStackEntry ->
 
             ResultsScreen(
-                years = backStackEntry.arguments?.getString("years") ?: "",
-                months = backStackEntry.arguments?.getString("months") ?: "",
-                days = backStackEntry.arguments?.getString("days") ?: "",
-                startDate = backStackEntry.arguments?.getString("startDate") ?: "",
-                detractionDays = backStackEntry.arguments?.getString("detractionDays") ?: "",
-                crimeType = backStackEntry.arguments?.getString("crimeType") ?: "",
-                inmateStatus = backStackEntry.arguments?.getString("inmateStatus") ?: ""
+                semiOpenDate =
+                    backStackEntry.arguments?.getString("semiOpenDate") ?: "",
+
+                openDate =
+                    backStackEntry.arguments?.getString("openDate") ?: "",
+
+                paroleDate =
+                    backStackEntry.arguments?.getString("paroleDate")
             )
         }
     }
@@ -166,6 +168,8 @@ fun CalculationScreen(
 
     val scrollState = rememberScrollState()
 
+    var showValidationError by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -192,7 +196,7 @@ fun CalculationScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Informe o tempo total da pena:"
+            text = "Informe o tempo total da pena:\n               (Com números)"
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -233,8 +237,6 @@ fun CalculationScreen(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-
-
 
         Button(
             onClick = {
@@ -323,10 +325,10 @@ fun CalculationScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text("Hediondo_Equiparado")
+                        Text("Hediondo/Equiparado")
                     },
                     onClick = {
-                        crimeType = "Hediondo_Equiparado"
+                        crimeType = "HEDIONDO_EQUIPARADO"
                         crimeMenuExpanded = false
                     }
                 )
@@ -393,23 +395,42 @@ fun CalculationScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(32.dp))
+        if (showValidationError) {
+            Text(
+                text = "Preencha todos os campos antes de continuar.",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Button(
             onClick = {
+                val valid =
+                    years.toIntOrNull() != null &&
+                            months.toIntOrNull() != null &&
+                            days.toIntOrNull() != null &&
+                            detractionDays.toIntOrNull() != null &&
+                            startDate.isNotBlank() &&
+                            crimeType.isNotBlank() &&
+                            inmateStatus.isNotBlank()
+
+            if (valid) {
                 val calculationData = CalculationData(
-                    years = years.toIntOrNull() ?: 0,
-                    months = months.toIntOrNull() ?: 0,
-                    days = days.toIntOrNull() ?: 0,
+                    years = years.toInt(),
+                    months = months.toInt(),
+                    days = days.toInt(),
                     startDate = startDate,
-                    detractionDays = detractionDays.toIntOrNull() ?: 0,
+                    detractionDays = detractionDays.toInt(),
                     crimeType = crimeType,
                     inmateStatus = inmateStatus
                 )
 
                 onCalculateClick(calculationData)
-            },
+            } else {
+                showValidationError = true
+            }
+        },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Calcular")
@@ -459,22 +480,17 @@ fun CalculationScreen(
 
 @Composable
 fun ResultsScreen(
-    years: String,
-    months: String,
-    days: String,
-    startDate: String,
-    detractionDays: String,
-    crimeType: String,
-    inmateStatus: String
+    semiOpenDate: String,
+    openDate: String,
+    paroleDate: String?
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(42.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
         Text(
             text = "Resultados",
             style = MaterialTheme.typography.headlineMedium
@@ -482,14 +498,23 @@ fun ResultsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Pena: $years anos, $months meses e $days dias")
+        Text("Progressão ao semiaberto:")
+        Text(semiOpenDate)
 
-        Text("Início: $startDate")
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Detração: $detractionDays dias")
+        Text("Progressão ao aberto:")
+        Text(openDate)
 
-        Text("Crime: $crimeType")
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Status: $inmateStatus")
+        Text("Livramento condicional:")
+        Text(
+            if (paroleDate.isNullOrBlank()) {
+                "Não disponível"
+            } else {
+                paroleDate
+            }
+        )
     }
 }
