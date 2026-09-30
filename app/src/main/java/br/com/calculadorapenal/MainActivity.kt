@@ -2,6 +2,8 @@ package br.com.calculadorapenal
 
 import br.com.calculadorapenal.model.CalculationData
 import br.com.calculadorapenal.calculation.PenaltyCalculator
+import br.com.calculadorapenal.model.CrimeType
+import br.com.calculadorapenal.model.InmateStatus
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -160,10 +162,10 @@ fun CalculationScreen(
     var startDate by remember { mutableStateOf("") }
     var detractionDays by remember { mutableStateOf("") }
 
-    var crimeType by remember { mutableStateOf("") }
+    var crimeType by remember { mutableStateOf<CrimeType?>(null) }
     var crimeMenuExpanded by remember { mutableStateOf(false) }
 
-    var inmateStatus by remember { mutableStateOf("") }
+    var inmateStatus by remember { mutableStateOf<InmateStatus?>(null) }
     var inmateStatusMenuExpanded by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
@@ -291,7 +293,11 @@ fun CalculationScreen(
             }
         ) {
             OutlinedTextField(
-                value = crimeType,
+                value = when (crimeType) {
+                    CrimeType.COMUM -> "Comum"
+                    CrimeType.HEDIONDO_EQUIPARADO -> "Hediondo/Equiparado"
+                    null -> ""
+                },
                 onValueChange = {},
                 readOnly = true,
                 label = {
@@ -318,7 +324,7 @@ fun CalculationScreen(
                         Text("Comum")
                     },
                     onClick = {
-                        crimeType = "Comum"
+                        crimeType = CrimeType.COMUM
                         crimeMenuExpanded = false
                     }
                 )
@@ -328,7 +334,7 @@ fun CalculationScreen(
                         Text("Hediondo/Equiparado")
                     },
                     onClick = {
-                        crimeType = "HEDIONDO_EQUIPARADO"
+                        crimeType = CrimeType.HEDIONDO_EQUIPARADO
                         crimeMenuExpanded = false
                     }
                 )
@@ -351,7 +357,11 @@ fun CalculationScreen(
             }
         ) {
             OutlinedTextField(
-                value = inmateStatus,
+                value = when (inmateStatus) {
+                    InmateStatus.PRIMARIO -> "Primário"
+                    InmateStatus.REINCIDENTE -> "Reincidente"
+                    null -> ""
+                },
                 onValueChange = {},
                 readOnly = true,
                 label = {
@@ -378,7 +388,7 @@ fun CalculationScreen(
                         Text("Primário")
                     },
                     onClick = {
-                        inmateStatus = "Primário"
+                        inmateStatus = InmateStatus.PRIMARIO
                         inmateStatusMenuExpanded = false
                     }
                 )
@@ -388,7 +398,7 @@ fun CalculationScreen(
                         Text("Reincidente")
                     },
                     onClick = {
-                        inmateStatus = "Reincidente"
+                        inmateStatus = InmateStatus.REINCIDENTE
                         inmateStatusMenuExpanded = false
                     }
                 )
@@ -412,8 +422,8 @@ fun CalculationScreen(
                             days.toIntOrNull() != null &&
                             detractionDays.toIntOrNull() != null &&
                             startDate.isNotBlank() &&
-                            crimeType.isNotBlank() &&
-                            inmateStatus.isNotBlank()
+                            crimeType != null &&
+                            inmateStatus != null
 
             if (valid) {
                 val calculationData = CalculationData(
@@ -422,8 +432,8 @@ fun CalculationScreen(
                     days = days.toInt(),
                     startDate = startDate,
                     detractionDays = detractionDays.toInt(),
-                    crimeType = crimeType,
-                    inmateStatus = inmateStatus
+                    crimeType = crimeType!!,
+                    inmateStatus = inmateStatus!!
                 )
 
                 onCalculateClick(calculationData)
@@ -487,7 +497,7 @@ fun ResultsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {

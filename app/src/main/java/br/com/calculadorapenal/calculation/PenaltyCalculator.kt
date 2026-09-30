@@ -20,8 +20,8 @@ object PenaltyCalculator {
             data.detractionDays.toLong()
         )
 
-        val progressionRule = ProgressionRule(
-            percentage = 0.16
+        val progressionRule = RuleProvider.getProgressionRule(
+            data
         )
 
         val semiOpenDate = DateCalculator.addFractionOfPenalty(

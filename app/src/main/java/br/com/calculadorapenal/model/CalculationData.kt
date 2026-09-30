@@ -8,8 +8,8 @@ data class CalculationData(
     val days: Int,
     val startDate: String,
     val detractionDays: Int,
-    val crimeType: String,
-    val inmateStatus: String
+    val crimeType: CrimeType,
+    val inmateStatus: InmateStatus
 ) {
     fun penaltyDuration(): PenaltyDuration {
         return PenaltyDuration(
