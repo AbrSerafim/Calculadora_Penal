@@ -1,5 +1,7 @@
 package br.com.calculadorapenal
 
+import br.com.calculadorapenal.model.CalculationData
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -37,6 +39,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import android.net.Uri
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -72,7 +75,36 @@ fun AppNavigation() {
         }
 
         composable("calculation") {
-            CalculationScreen()
+            CalculationScreen(
+                onCalculateClick = { calculationData ->
+
+                    navController.navigate(
+                        "results/" +
+                                "${calculationData.years}/" +
+                                "${calculationData.months}/" +
+                                "${calculationData.days}/" +
+                                "${Uri.encode(calculationData.startDate)}/" +
+                                "${calculationData.detractionDays}/" +
+                                "${Uri.encode(calculationData.crimeType)}/" +
+                                "${Uri.encode(calculationData.inmateStatus)}"
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = "results/{years}/{months}/{days}/{startDate}/{detractionDays}/{crimeType}/{inmateStatus}"
+        ) { backStackEntry ->
+
+            ResultsScreen(
+                years = backStackEntry.arguments?.getString("years") ?: "",
+                months = backStackEntry.arguments?.getString("months") ?: "",
+                days = backStackEntry.arguments?.getString("days") ?: "",
+                startDate = backStackEntry.arguments?.getString("startDate") ?: "",
+                detractionDays = backStackEntry.arguments?.getString("detractionDays") ?: "",
+                crimeType = backStackEntry.arguments?.getString("crimeType") ?: "",
+                inmateStatus = backStackEntry.arguments?.getString("inmateStatus") ?: ""
+            )
         }
     }
 }
@@ -112,7 +144,9 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalculationScreen() {
+fun CalculationScreen(
+    onCalculateClick: (CalculationData) -> Unit
+) {
 
     var years by remember { mutableStateOf("") }
     var months by remember { mutableStateOf("") }
@@ -289,10 +323,10 @@ fun CalculationScreen() {
 
                 DropdownMenuItem(
                     text = {
-                        Text("Hediondo/Equiparado")
+                        Text("Hediondo_Equiparado")
                     },
                     onClick = {
-                        crimeType = "Hediondo/Equiparado"
+                        crimeType = "Hediondo_Equiparado"
                         crimeMenuExpanded = false
                     }
                 )
@@ -364,7 +398,17 @@ fun CalculationScreen() {
 
         Button(
             onClick = {
-                //
+                val calculationData = CalculationData(
+                    years = years.toIntOrNull() ?: 0,
+                    months = months.toIntOrNull() ?: 0,
+                    days = days.toIntOrNull() ?: 0,
+                    startDate = startDate,
+                    detractionDays = detractionDays.toIntOrNull() ?: 0,
+                    crimeType = crimeType,
+                    inmateStatus = inmateStatus
+                )
+
+                onCalculateClick(calculationData)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -411,5 +455,41 @@ fun CalculationScreen() {
             )
         }
     }
+}
 
+@Composable
+fun ResultsScreen(
+    years: String,
+    months: String,
+    days: String,
+    startDate: String,
+    detractionDays: String,
+    crimeType: String,
+    inmateStatus: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(42.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+
+        Text(
+            text = "Resultados",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text("Pena: $years anos, $months meses e $days dias")
+
+        Text("Início: $startDate")
+
+        Text("Detração: $detractionDays dias")
+
+        Text("Crime: $crimeType")
+
+        Text("Status: $inmateStatus")
+    }
 }
