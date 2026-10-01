@@ -47,6 +47,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.offset
+import br.com.calculadorapenal.ui.theme.Orange
+import br.com.calculadorapenal.ui.theme.White
+import br.com.calculadorapenal.ui.theme.Black
 
 
 import java.text.SimpleDateFormat
@@ -122,32 +133,49 @@ fun AppNavigation() {
 fun HomeScreen(
     onStartClick: () -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp)
     ) {
-        Text(
-            text = "Calculadora Penal",
-            style = MaterialTheme.typography.headlineMedium
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Estime prazos relacionados à execução penal.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = onStartClick
+        // Center content
+        Column(
+            modifier = Modifier.align(Alignment.Center).offset(y = (-48).dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Iniciar Cálculo")
+            Text(
+                text = "Calculadora Penal",
+                style = MaterialTheme.typography.headlineMedium,
+                color = White
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Estime prazos relacionados à execução penal.",
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = onStartClick
+            ) {
+                Text("Iniciar Cálculo")
+            }
         }
+
+        // Bottom logo
+        Image(
+            painter = painterResource(id = R.drawable.logo_branca),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .size(280.dp),
+            contentScale = ContentScale.Fit
+        )
     }
 }
 
@@ -180,6 +208,7 @@ fun CalculationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -190,14 +219,16 @@ fun CalculationScreen(
 
         Text(
             text = "Cálculo da Pena",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
             text = "Pena Total",
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -240,7 +271,8 @@ fun CalculationScreen(
 
         Text(
             text = "Data de início da pena",
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -263,7 +295,8 @@ fun CalculationScreen(
 
         Text(
             text = "Tempo de Detração",
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -286,7 +319,8 @@ fun CalculationScreen(
 
         Text(
             text = "Tipo de Crime",
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -326,7 +360,7 @@ fun CalculationScreen(
             ) {
                 DropdownMenuItem(
                     text = {
-                        Text("Comum")
+                        Text("Comum",color = Black)
                     },
                     onClick = {
                         crimeType = CrimeType.COMUM
@@ -336,7 +370,7 @@ fun CalculationScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text("Hediondo/Equiparado")
+                        Text("Hediondo/Equiparado", color = Black)
                     },
                     onClick = {
                         crimeType = CrimeType.HEDIONDO_EQUIPARADO
@@ -350,7 +384,8 @@ fun CalculationScreen(
 
         Text(
             text = "Status do Apenado",
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -370,7 +405,7 @@ fun CalculationScreen(
                 onValueChange = {},
                 readOnly = true,
                 label = {
-                    Text("Status")
+                    Text("Status", color = White)
                 },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
@@ -390,7 +425,7 @@ fun CalculationScreen(
             ) {
                 DropdownMenuItem(
                     text = {
-                        Text("Primário")
+                        Text("Primário", color = Black)
                     },
                     onClick = {
                         inmateStatus = InmateStatus.PRIMARIO
@@ -400,7 +435,7 @@ fun CalculationScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text("Reincidente")
+                        Text("Reincidente", color = Black)
                     },
                     onClick = {
                         inmateStatus = InmateStatus.REINCIDENTE
@@ -496,8 +531,64 @@ fun CalculationScreen(
             }
         ) {
             DatePicker(
-                state = datePickerState
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = White,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    headlineContentColor = MaterialTheme.colorScheme.onSurface,
+                    weekdayContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    subheadContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+
+                    dayContentColor = MaterialTheme.colorScheme.onSurface,
+                    selectedDayContentColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedDayContainerColor = MaterialTheme.colorScheme.primary,
+
+                    todayContentColor = MaterialTheme.colorScheme.primary,
+                    todayDateBorderColor = MaterialTheme.colorScheme.primary,
+
+                    yearContentColor = MaterialTheme.colorScheme.onSurface,
+                    selectedYearContentColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedYearContainerColor = MaterialTheme.colorScheme.primary
+                )
             )
+            DatePickerDialog(
+                onDismissRequest = {
+                    showDatePicker = false
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val formatter = SimpleDateFormat(
+                                    "dd/MM/yyyy",
+                                    Locale.getDefault()
+                                )
+                                startDate = formatter.format(Date(millis))
+                            }
+
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text("Cancelar")
+                    }
+                },
+                colors = DatePickerDefaults.colors(
+                    containerColor = Orange
+                )
+            ) {
+                DatePicker(
+                    state = datePickerState
+                )
+            }
         }
     }
 }
@@ -541,6 +632,7 @@ fun ResultsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollStateRes)
             .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -551,7 +643,8 @@ fun ResultsScreen(
 
         Text(
             text = "Resultados",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -580,7 +673,8 @@ fun ResultsScreen(
 
         Text(
             text = "Salvar ou enviar resultado",
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = White
         )
 
         Spacer(modifier = Modifier.height(8.dp))
