@@ -371,7 +371,7 @@ fun CalculationScreen(
             ) {
                 DropdownMenuItem(
                     text = {
-                        Text("Comum",color = Black)
+                        Text("Comum",color = White)
                     },
                     onClick = {
                         crimeType = CrimeType.COMUM
@@ -381,7 +381,7 @@ fun CalculationScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text("Hediondo/Equiparado", color = Black)
+                        Text("Hediondo/Equiparado", color = White)
                     },
                     onClick = {
                         crimeType = CrimeType.HEDIONDO_EQUIPARADO
@@ -436,7 +436,7 @@ fun CalculationScreen(
             ) {
                 DropdownMenuItem(
                     text = {
-                        Text("Primário", color = Black)
+                        Text("Primário", color = White)
                     },
                     onClick = {
                         inmateStatus = InmateStatus.PRIMARIO
@@ -446,7 +446,7 @@ fun CalculationScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text("Reincidente", color = Black)
+                        Text("Reincidente", color = White)
                     },
                     onClick = {
                         inmateStatus = InmateStatus.REINCIDENTE
