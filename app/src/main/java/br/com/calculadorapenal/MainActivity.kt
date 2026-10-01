@@ -55,6 +55,8 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.unit.sp
 import br.com.calculadorapenal.ui.theme.Orange
 import br.com.calculadorapenal.ui.theme.White
 import br.com.calculadorapenal.ui.theme.Black
@@ -223,6 +225,15 @@ fun CalculationScreen(
             color = White
         )
 
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = "Baseada no Pacote Anticrime",
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 12.sp,
+            color = White
+        )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
@@ -231,13 +242,13 @@ fun CalculationScreen(
             color = White
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "Informe o tempo total da pena:\n               (Com números)"
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = years,
