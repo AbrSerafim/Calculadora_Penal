@@ -416,30 +416,39 @@ fun CalculationScreen(
 
         Button(
             onClick = {
+                val yearsValue = years.toIntOrNull()
+                val monthsValue = months.toIntOrNull()
+                val daysValue = days.toIntOrNull()
+                val detractionValue = detractionDays.toIntOrNull()
+
                 val valid =
-                    years.toIntOrNull() != null &&
-                            months.toIntOrNull() != null &&
-                            days.toIntOrNull() != null &&
-                            detractionDays.toIntOrNull() != null &&
+                    yearsValue != null &&
+                            monthsValue != null &&
+                            daysValue != null &&
+                            detractionValue != null &&
+                            yearsValue >= 0 &&
+                            monthsValue >= 0 &&
+                            daysValue >= 0 &&
+                            detractionValue >= 0 &&
                             startDate.isNotBlank() &&
                             crimeType != null &&
                             inmateStatus != null
 
-            if (valid) {
-                val calculationData = CalculationData(
-                    years = years.toInt(),
-                    months = months.toInt(),
-                    days = days.toInt(),
-                    startDate = startDate,
-                    detractionDays = detractionDays.toInt(),
-                    crimeType = crimeType!!,
-                    inmateStatus = inmateStatus!!
-                )
+                if (valid) {
+                    val calculationData = CalculationData(
+                        years = yearsValue,
+                        months = monthsValue,
+                        days = daysValue,
+                        startDate = startDate,
+                        detractionDays = detractionValue,
+                        crimeType = crimeType!!,
+                        inmateStatus = inmateStatus!!
+                    )
 
-                onCalculateClick(calculationData)
-            } else {
-                showValidationError = true
-            }
+                    onCalculateClick(calculationData)
+                } else {
+                    showValidationError = true
+                }
         },
             modifier = Modifier.fillMaxWidth()
         ) {

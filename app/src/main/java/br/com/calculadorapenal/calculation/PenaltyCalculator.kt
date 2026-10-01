@@ -18,52 +18,46 @@ object PenaltyCalculator {
             dateFormatter
         )
 
+        // Apply detraction before calculating any dates
         val baseDate = startDate.minusDays(
             data.detractionDays.toLong()
         )
 
-        // Progression rule
+        val penalty = data.penaltyDuration()
+
+        // =====================================================
+        // 1st progression: Closed -> Semi-open
+        // =====================================================
+
         val progressionRule = RuleProvider.getProgressionRule(data)
 
-        /*
-         * 1st progression:
-         * Closed -> Semi-open
-         */
         val semiOpenDate = DateCalculator.addFractionOfPenalty(
             baseDate = baseDate,
-            penalty = data.penaltyDuration(),
+            penalty = penalty,
             percentage = progressionRule.percentage
         )
 
-        /*
-         * 2nd progression:
-         * Semi-open -> Open
-         *
-         * The percentage is applied to the
-         * remaining sentence.
-         */
+        // =====================================================
+        // 2nd progression: Semi-open -> Open
+        // =====================================================
 
-        // Calculate total sentence in days
         val sentenceEnd = baseDate
-            .plusYears(data.penaltyDuration().years.toLong())
-            .plusMonths(data.penaltyDuration().months.toLong())
-            .plusDays(data.penaltyDuration().days.toLong())
+            .plusYears(penalty.years.toLong())
+            .plusMonths(penalty.months.toLong())
+            .plusDays(penalty.days.toLong())
 
         val totalDays = ChronoUnit.DAYS.between(
             baseDate,
             sentenceEnd
         )
 
-        // Days already served when reaching semi-open
         val daysUntilSemiOpen = ChronoUnit.DAYS.between(
             baseDate,
             semiOpenDate
         )
 
-        // Remaining sentence
         val remainingDays = totalDays - daysUntilSemiOpen
 
-        // Required fraction of the remaining sentence
         val openRequiredDays = floor(
             remainingDays * progressionRule.percentage
         ).toLong()
@@ -72,14 +66,15 @@ object PenaltyCalculator {
             openRequiredDays
         )
 
-        /*
-         * Livramento condicional
-         */
+        // =====================================================
+        // Livramento condicional
+        // =====================================================
+
         val paroleRule = ParoleRuleProvider.getParoleRule(data)
 
         val paroleDate = DateCalculator.addFractionOfPenalty(
             baseDate = baseDate,
-            penalty = data.penaltyDuration(),
+            penalty = penalty,
             percentage = paroleRule.percentage
         )
 
