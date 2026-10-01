@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -42,7 +43,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import android.content.Intent
 import android.net.Uri
+
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -497,19 +502,53 @@ fun CalculationScreen(
     }
 }
 
+fun formatProcessNumber(input: String): String {
+    val digits = input.filter { it.isDigit() }.take(20)
+
+    return buildString {
+        digits.forEachIndexed { index, char ->
+            when (index) {
+                7 -> append("-")
+                9 -> append(".")
+                13 -> append(".")
+                14 -> append(".")
+                16 -> append(".")
+            }
+
+            append(char)
+        }
+    }
+}
+
 @Composable
 fun ResultsScreen(
     semiOpenDate: String,
     openDate: String,
     paroleDate: String?
 ) {
+
+    val context = LocalContext.current
+
+    var fullName by remember { mutableStateOf("") }
+    var whatsapp by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var processNumber by remember { mutableStateOf("") }
+
+    var showValidationError by remember { mutableStateOf(false) }
+
+    val scrollStateRes = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollStateRes)
             .padding(42.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+
+        // Results
+
         Text(
             text = "Resultados",
             style = MaterialTheme.typography.headlineMedium
@@ -535,5 +574,183 @@ fun ResultsScreen(
                 paroleDate
             }
         )
+
+        // Contact
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            text = "Salvar ou enviar resultado",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Preencha seus dados para salvar ou enviar o resultado."
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Nome
+        OutlinedTextField(
+            value = fullName,
+            onValueChange = {
+                fullName = it
+                showValidationError = false
+            },
+            label = {
+                Text("Nome Completo *")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // WhatsApp
+        OutlinedTextField(
+            value = whatsapp,
+            onValueChange = {
+                whatsapp = it
+                showValidationError = false
+            },
+            label = {
+                Text("Número de WhatsApp *")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // E-mail
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+            },
+            label = {
+                Text("E-mail")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Número do processo
+        OutlinedTextField(
+            value = processNumber,
+            onValueChange = {
+                processNumber = formatProcessNumber(it)
+            },
+            label = {
+                Text("Número do Processo")
+            },
+            placeholder = {
+                Text("NNNNNNN-DD.AAAA.J.TR.OOOO")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if (showValidationError) {
+            Text(
+                text = "Preencha o nome completo e o WhatsApp.",
+                color = MaterialTheme.colorScheme.error
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        // =====================================================
+        // SHARE RESULT
+        // =====================================================
+
+        Button(
+            onClick = {
+
+                if (
+                    fullName.isBlank() ||
+                    whatsapp.isBlank()
+                ) {
+                    showValidationError = true
+                    return@Button
+                }
+
+                val resultText = """
+                    Calculadora Penal
+                    
+                    Nome: $fullName
+                    WhatsApp: $whatsapp
+                    E-mail: ${email.ifBlank { "Não informado" }}
+                    Número do Processo: ${processNumber.ifBlank { "Não informado" }}
+                    
+                    Progressão ao semiaberto: $semiOpenDate
+                    Progressão ao aberto: $openDate
+                    Livramento condicional: ${
+                    paroleDate?.takeIf { it.isNotBlank() }
+                        ?: "Não disponível"
+                }
+                
+                    ==== CESPEDES LOURENÇO ADVOGADOS ====
+                """.trimIndent()
+
+                val sendIntent = Intent(
+                    Intent.ACTION_SEND
+                ).apply {
+                    type = "text/plain"
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        resultText
+                    )
+                }
+
+                val shareIntent = Intent.createChooser(
+                    sendIntent,
+                    "Enviar resultado"
+                )
+
+                context.startActivity(shareIntent)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Salvar / Enviar Resultado")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // =====================================================
+        // LAWYER CTA
+        // =====================================================
+
+        Button(
+            onClick = {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(
+                        "https://cespedeslourencoadvogados.com.br/contato/"
+                    )
+                )
+
+                context.startActivity(intent)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Quero Falar com um Advogado")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
