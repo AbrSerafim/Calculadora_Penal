@@ -1,6 +1,8 @@
 package br.com.calculadorapenal.calculation
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import kotlin.math.floor
 
 object DateCalculator {
 
@@ -10,12 +12,22 @@ object DateCalculator {
         percentage: Double
     ): LocalDate {
 
-        val totalDays =
-            penalty.years * 365L +
-                    penalty.months * 30L +
-                    penalty.days
+        // Calculate the end of the sentence using calendar dates
+        val sentenceEnd = baseDate
+            .plusYears(penalty.years.toLong())
+            .plusMonths(penalty.months.toLong())
+            .plusDays(penalty.days.toLong())
 
-        val requiredDays = (totalDays * percentage).toLong()
+        // Number of days in the sentence
+        val totalDays = ChronoUnit.DAYS.between(
+            baseDate,
+            sentenceEnd
+        )
+
+        // Required fraction of the sentence
+        val requiredDays = floor(
+            totalDays * percentage
+        ).toLong()
 
         return baseDate.plusDays(requiredDays)
     }
