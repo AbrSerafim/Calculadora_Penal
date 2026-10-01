@@ -340,7 +340,7 @@ fun CalculationScreen(
             expanded = crimeMenuExpanded,
             onExpandedChange = {
                 crimeMenuExpanded = !crimeMenuExpanded
-            }
+            },
         ) {
             OutlinedTextField(
                 value = when (crimeType) {
@@ -367,7 +367,8 @@ fun CalculationScreen(
                 expanded = crimeMenuExpanded,
                 onDismissRequest = {
                     crimeMenuExpanded = false
-                }
+                },
+                containerColor = Black
             ) {
                 DropdownMenuItem(
                     text = {
@@ -405,7 +406,7 @@ fun CalculationScreen(
             expanded = inmateStatusMenuExpanded,
             onExpandedChange = {
                 inmateStatusMenuExpanded = !inmateStatusMenuExpanded
-            }
+            },
         ) {
             OutlinedTextField(
                 value = when (inmateStatus) {
@@ -432,7 +433,8 @@ fun CalculationScreen(
                 expanded = inmateStatusMenuExpanded,
                 onDismissRequest = {
                     inmateStatusMenuExpanded = false
-                }
+                },
+                containerColor = Black
             ) {
                 DropdownMenuItem(
                     text = {
