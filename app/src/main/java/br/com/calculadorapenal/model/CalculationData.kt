@@ -9,6 +9,7 @@ data class CalculationData(
     val startDate: String,
     val detractionDays: Int,
     val crimeType: CrimeType,
+    val violenceType: WithViolence,
     val inmateStatus: InmateStatus
 ) {
     fun penaltyDuration(): PenaltyDuration {

@@ -3,6 +3,7 @@ package br.com.calculadorapenal
 import br.com.calculadorapenal.model.CalculationData
 import br.com.calculadorapenal.calculation.PenaltyCalculator
 import br.com.calculadorapenal.model.CrimeType
+import br.com.calculadorapenal.model.WithViolence
 import br.com.calculadorapenal.model.InmateStatus
 
 import android.os.Bundle
@@ -164,6 +165,9 @@ fun CalculationScreen(
 
     var crimeType by remember { mutableStateOf<CrimeType?>(null) }
     var crimeMenuExpanded by remember { mutableStateOf(false) }
+
+    var violenceType by remember { mutableStateOf<WithViolence?>(null) }
+    var violenceMenuExpanded by remember { mutableStateOf(false) }
 
     var inmateStatus by remember { mutableStateOf<InmateStatus?>(null) }
     var inmateStatusMenuExpanded by remember { mutableStateOf(false) }
@@ -344,6 +348,70 @@ fun CalculationScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
+            text = "Crime com/sem violência",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ExposedDropdownMenuBox(
+            expanded = violenceMenuExpanded,
+            onExpandedChange = {
+                violenceMenuExpanded = !violenceMenuExpanded
+            }
+        ) {
+            OutlinedTextField(
+                value = when (violenceType) {
+                    WithViolence.SEM -> "Sem Violência"
+                    WithViolence.COM -> "Com Violência"
+                    null -> ""
+                },
+                onValueChange = {},
+                readOnly = true,
+                label = {
+                    Text("Crime com/sem violência")
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = crimeMenuExpanded
+                    )
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = violenceMenuExpanded,
+                onDismissRequest = {
+                    violenceMenuExpanded = false
+                }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text("Sem Violência")
+                    },
+                    onClick = {
+                        violenceType = WithViolence.SEM
+                        violenceMenuExpanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = {
+                        Text("Com Violência")
+                    },
+                    onClick = {
+                        violenceType = WithViolence.COM
+                        violenceMenuExpanded = false
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
             text = "Status do Apenado",
             style = MaterialTheme.typography.titleMedium
         )
@@ -432,6 +500,7 @@ fun CalculationScreen(
                             detractionValue >= 0 &&
                             startDate.isNotBlank() &&
                             crimeType != null &&
+                            violenceType != null &&
                             inmateStatus != null
 
                 if (valid) {
@@ -442,6 +511,7 @@ fun CalculationScreen(
                         startDate = startDate,
                         detractionDays = detractionValue,
                         crimeType = crimeType!!,
+                        violenceType = violenceType!!,
                         inmateStatus = inmateStatus!!
                     )
 
