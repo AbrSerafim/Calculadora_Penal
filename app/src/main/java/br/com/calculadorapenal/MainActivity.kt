@@ -45,6 +45,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.size
@@ -55,8 +56,6 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
-import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.unit.sp
 import br.com.calculadorapenal.ui.theme.Orange
 import br.com.calculadorapenal.ui.theme.White
 import br.com.calculadorapenal.ui.theme.Black
@@ -157,7 +156,8 @@ fun HomeScreen(
 
             Text(
                 text = "Estime prazos relacionados à execução penal.",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -222,15 +222,6 @@ fun CalculationScreen(
         Text(
             text = "Cálculo da Pena",
             style = MaterialTheme.typography.headlineMedium,
-            color = White
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = "Baseada no Pacote Anticrime",
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 12.sp,
             color = White
         )
 
@@ -462,7 +453,7 @@ fun CalculationScreen(
 
         if (showValidationError) {
             Text(
-                text = "Preencha todos os campos antes de continuar.",
+                text = "Preencha todos os campos com valores válidos antes de continuar.",
                 color = MaterialTheme.colorScheme.error
             )
         }
