@@ -243,30 +243,39 @@ fun CalculationScreen(
 
         OutlinedTextField(
             value = years,
-            onValueChange = { years = it },
+            onValueChange = { years = it.filter {char -> char.isDigit()} },
             label = {
                 Text("Anos")
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = months,
-            onValueChange = { months = it },
+            onValueChange = { months = it.filter {char -> char.isDigit()} },
             label = {
                 Text("Meses")
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = days,
-            onValueChange = { days = it },
+            onValueChange = { days = it.filter {char -> char.isDigit()} },
             label = {
                 Text("Dias")
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -286,7 +295,7 @@ fun CalculationScreen(
         ) {
             Text(
                 if (startDate.isEmpty()) {
-                    "Selecionar data"
+                    "Clique para selecionar data"
                 } else {
                     startDate
                 }
@@ -311,10 +320,13 @@ fun CalculationScreen(
 
         OutlinedTextField(
             value = detractionDays,
-            onValueChange = { detractionDays = it },
+            onValueChange = { detractionDays = it.filter {char -> char.isDigit()} },
             label = {
                 Text("Dias de detração")
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
