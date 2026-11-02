@@ -248,7 +248,7 @@ fun CalculationScreen(
                 Text("Anos")
             },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Phone
             )
         )
 
@@ -261,7 +261,7 @@ fun CalculationScreen(
                 Text("Meses")
             },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Phone
             )
         )
 
@@ -274,7 +274,7 @@ fun CalculationScreen(
                 Text("Dias")
             },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Phone
             )
         )
 
@@ -325,7 +325,7 @@ fun CalculationScreen(
                 Text("Dias de detração")
             },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Phone
             )
         )
 
